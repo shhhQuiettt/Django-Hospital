@@ -1,6 +1,7 @@
 from hospital import queries
 from hospital.models import Diagnosis, Doctor, Patient, Surgery
 from hospital.utils import CustomTestCase
+from datetime import datetime
 
 
 class HospitalTests(CustomTestCase):
@@ -58,7 +59,7 @@ class HospitalTests(CustomTestCase):
         ignoring case.
         """
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Surgery.objects.filter(procedure__contains="surgery"),
             queries.procedure_contains_surgery_case_insensitive(),
         )
 
@@ -67,28 +68,28 @@ class HospitalTests(CustomTestCase):
         case sensitive.
         """
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Surgery.objects.filter(procedure__icontains="Surgery"),
             queries.procedure_contains_surgery_case_sensitive(),
         )
 
     def test_patients_with_certain_first_names(self):
         """Retrieve patients who have any of these names: Katie, Kevin, Rick."""
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Patient.objects.filter(first_name__in=["Katie", "Kevin", "Rick"]),
             queries.patients_with_certain_first_names(),
         )
 
     def test_doctors_born_in_certain_years(self):
         """Retrieve doctors born in any of these years: 1954, 1973."""
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Doctor.objects.filter(birth_year__in=[1954, 1973]),
             queries.doctors_born_in_certain_years(),
         )
 
     def test_interns_born_after_1978(self):
         """Retrieve doctors who are interns born after 1978."""
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Doctor.objects.filter(birth_year__gt=1978, position="Intern"),
             queries.interns_born_after_1978(),
         )
 
@@ -96,8 +97,10 @@ class HospitalTests(CustomTestCase):
         """Retrieve surgeries that happened on 10 April 2005 and started before
         12 noon.
         """
+        start_date = datetime(2005, 4, 10, 0, 0, 0)
+        end_date = datetime(2005, 4, 10, 11, 59, 59)
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Surgery.objects.filter(start_datetime__range=(start_date, end_date)),
             queries.surgeries_on_10_apr_2005_starting_before_noon(),
         )
 
