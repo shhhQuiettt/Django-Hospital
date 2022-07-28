@@ -18,35 +18,35 @@ class HospitalTests(CustomTestCase):
     def test_all_doctors(self):
         """Retrieve every doctor."""
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Doctor.objects.all(),
             queries.all_doctors(),
         )
 
     def test_meredith_grey(self):
         """Retrieve only the doctor Meredith Grey."""
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Doctor.objects.filter(first_name="Meredith", last_name="Grey"),
             queries.meredith_grey(),
         )
 
     def test_all_attendings(self):
         """Retrieve the doctors who are attendings."""
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Doctor.objects.filter(position=Doctor.ATTENDING),
             queries.all_attendings(),
         )
 
     def test_deceased_patients(self):
         """Retrieve patients who died."""
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Patient.objects.filter(survived=False),
             queries.deceased_patients(),
         )
 
     def test_patients_unknown_last_name(self):
         """Retrieve patients whose last name isn't known.."""
         self.assertQuerysetEqual(
-            "Replace with your query",
+            Patient.objects.filter(last_name__isnull=True),
             queries.patients_unknown_last_name(),
         )
 

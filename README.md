@@ -1,19 +1,23 @@
+Forked from https://github.com/ellen364/Django-Hospital
+with solutions
+
 ![Django Hospital](./django_hospital_logo.png)
 
 Django Hospital is an interactive way to practice Django queries.
 
 ## Features
 
-* For Django 3.1
-* Provides data for a fictional hospital -- doctors, patients, diagnoses and surgeries
-* Uses Python's built in testing tools (unittest)
-* Start with 20 failing tests. Write your queries in `tests.py` and watch test failures turn into test successes
+- For Django 3.1
+- Provides data for a fictional hospital -- doctors, patients, diagnoses and surgeries
+- Uses Python's built in testing tools (unittest)
+- Start with 20 failing tests. Write your queries in `tests.py` and watch test failures turn into test successes
 
 ## Installing
 
 To install Django Hospital:
-* Clone the repo
-* Install the requirements in `requirements/base.txt`
+
+- Clone the repo
+- Install the requirements in `requirements/base.txt`
 
 ## Using Django Hospital
 
@@ -22,6 +26,7 @@ Have a look in `hospital/models.py` to get familiar with the 4 models (Doctor, P
 Open `hospital/tests.py` and start working through the practice queries.
 
 Each test has the structure below. The docstring explains what data you should retrieve with your query. The first argument to `assertQuerysetEqual`, "Replace with your query", is where your query goes. The second argument, `queries.all_doctors()` in this case, is the value against which your query will be compared.
+
 ```python
 def test_all_doctors(self):
     """Retrieve every doctor."""
@@ -32,6 +37,7 @@ def test_all_doctors(self):
 ```
 
 Whenever you want to check your answers, run the tests.
+
 ```
 python manage.py test
 ```
@@ -46,14 +52,15 @@ python manage.py loaddata hospital/fixtures/initial_data.json
 ```
 
 To access the Django admin, you also need to create a user.
+
 ```
 python manage.py createsuperuser
 ```
 
 ## Acknowledgments
 
-* Grey's Anatomy is owned by ABC and was created by Shonda Rhimes.
-* Information from the [Grey's Anatomy Universe Wiki] was used to create the fixtures, with a little guessing from me (e.g. where intern birth years weren't available).
+- Grey's Anatomy is owned by ABC and was created by Shonda Rhimes.
+- Information from the [Grey's Anatomy Universe Wiki] was used to create the fixtures, with a little guessing from me (e.g. where intern birth years weren't available).
 
 [issue]: https://github.com/ellen364/Django-Hospital/issues/new
-[Grey's Anatomy Universe Wiki]: http://greysanatomy.wikia.com/wiki/Grey%27s_Anatomy_Universe_Wiki
+[grey's anatomy universe wiki]: http://greysanatomy.wikia.com/wiki/Grey%27s_Anatomy_Universe_Wiki
