@@ -14,7 +14,7 @@ def all_doctors():
 
 
 def meredith_grey():
-    return Doctor.objects.get(first_name="Meredith")
+    return Doctor.objects.filter(first_name="Meredith")
 
 
 def all_attendings():

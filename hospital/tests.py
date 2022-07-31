@@ -2,13 +2,25 @@ from hospital import queries
 from hospital.models import Diagnosis, Doctor, Patient, Surgery
 from hospital.utils import CustomTestCase
 from datetime import datetime
+from datetime import timedelta
+from django.db.models import (
+    Max,
+    Avg,
+    Min,
+    Count,
+    DurationField,
+    ExpressionWrapper,
+    fields,
+    F,
+)
+from django.db import connection
 
 
 class HospitalTests(CustomTestCase):
     fixtures = ["initial_data"]
 
     def test_all_patients(self):
-        """A completed example. Change the first argument of the assert,
+        """A completed example. Change the firstmode argument of the assert,
         Patient.objects.all(), to make the test fail.
         """
         self.assertQuerysetEqual(
@@ -47,7 +59,7 @@ class HospitalTests(CustomTestCase):
     def test_patients_unknown_last_name(self):
         """Retrieve patients whose last name isn't known.."""
         self.assertQuerysetEqual(
-            Patient.objects.filter(last_name__isnull=True),
+            Patient.objects.filter(last_name=""),
             queries.patients_unknown_last_name(),
         )
 
@@ -89,7 +101,7 @@ class HospitalTests(CustomTestCase):
     def test_interns_born_after_1978(self):
         """Retrieve doctors who are interns born after 1978."""
         self.assertQuerysetEqual(
-            Doctor.objects.filter(birth_year__gt=1978, position="Intern"),
+            Doctor.objects.filter(birth_year__gt=1978, position="INT"),
             queries.interns_born_after_1978(),
         )
 
@@ -110,15 +122,18 @@ class HospitalTests(CustomTestCase):
 
         Retrieve all of Dr Bailey's surgeries.
         """
+        queryset = Surgery.objects.filter(doctors__last_name="Bailey")
         self.assertQuerysetEqual(
-            "Replace with your query",
+            queryset,
             queries.baileys_surgeries(),
         )
 
     def test_cardiothoracic_surgeries(self):
-        """Retrieve all cardiothoracic surgeries."""
+        """Retrieve all surgeries carried out by a cardiolog"""
+
+        queryset = Surgery.objects.filter(doctors__speciality="CAR")
         self.assertQuerysetEqual(
-            "Replace with your query",
+            queryset,
             queries.cardiothoracic_surgeries(),
         )
 
@@ -127,8 +142,12 @@ class HospitalTests(CustomTestCase):
 
         Tip: patients can have >1 surgery.
         """
+
+        queryset = Patient.objects.filter(
+            surgery__doctors__last_name="Shepherd"
+        ).distinct()
         self.assertQuerysetEqual(
-            "Replace with your query",
+            queryset,
             queries.shepherds_patients(),
         )
 
@@ -137,29 +156,41 @@ class HospitalTests(CustomTestCase):
 
         How many patients died?
         """
-        self.assertQuerysetEqual(
-            "Replace with your query",
+
+        dead = Patient.objects.filter(survived=False).count()
+        self.assertEqual(
+            dead,
             queries.number_deceased_patients(),
         )
 
     def test_number_of_diagnoses_jerry_frost(self):
         """How many diagnoses were received by the patient Jerry Frost?"""
-        self.assertQuerysetEqual(
-            "Replace with your query",
+
+        number = Diagnosis.objects.filter(
+            patient__first_name__exact="Jerry", patient__last_name="Frost"
+        ).count()
+
+        self.assertEqual(
+            number,
             queries.number_of_diagnoses_jerry_frost(),
         )
 
     def test_earliest_birth_year_of_doctors(self):
         """The doctors' records contain birth years. What is the earliest birth year?"""
-        self.assertQuerysetEqual(
-            "Replace with your query",
+        query = Doctor.objects.aggregate(Min("birth_year"))
+        self.assertEqual(
+            query,
             queries.earliest_birth_year_of_doctors(),
         )
 
     def test_largest_number_of_diagnoses(self):
         """What is the largest number of diagnoses received by a patient?"""
-        self.assertQuerysetEqual(
-            "Replace with your query",
+        query = Patient.objects.annotate(num_diagnoses=Count("diagnosis")).aggregate(
+            Max("num_diagnoses")
+        )
+
+        self.assertEqual(
+            query,
             queries.largest_number_of_diagnoses(),
         )
 
@@ -169,14 +200,27 @@ class HospitalTests(CustomTestCase):
         Tip: if you're using SQLite, the default database, you'll need to use an
         ExpressionWrapper.
         """
-        self.assertQuerysetEqual(
-            "Replace with your query",
+        avg_time = Surgery.objects.annotate(
+            duration=ExpressionWrapper(
+                F("end_datetime") - F("start_datetime"),
+                output_field=DurationField(),
+            ),
+        ).aggregate(Avg("duration"))
+
+        self.assertEqual(
+            avg_time,
             queries.average_duration_all_surgeries(),
         )
 
     def test_surgeries_longer_3hours(self):
         """Retrieve surgeries that were longer than 3 hours."""
+        query = Surgery.objects.annotate(
+            duration=ExpressionWrapper(
+                F("end_datetime") - F("start_datetime"),
+                output_field=DurationField(),
+            ),
+        ).filter(duration__gt=timedelta(hours=3))
         self.assertQuerysetEqual(
-            "Replace with your query",
+            query,
             queries.surgeries_longer_3hours(),
         )
